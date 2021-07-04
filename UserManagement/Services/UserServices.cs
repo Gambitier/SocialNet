@@ -2,8 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
+using System.Threading.Tasks;
 using UserManagement.DataModels;
 using UserManagement.DBConfiguration;
+using UserManagement.Exceptions;
 using UserManagement.RequestModels;
 
 namespace UserManagement.Services
@@ -22,17 +25,10 @@ namespace UserManagement.Services
             return _users.Find(user => true).ToList();
         }
 
-        public string RegisterUser(UserRegistration userRegistration)
+        public async Task<string> RegisterUserAsync(UserRegistration userRegistration)
         {
-            if (!UsernameIsUnique(userRegistration.UserName))
-            {
-                //throw error
-            }
-
-            if (!ValidateEmail(userRegistration.Email))
-            {
-                //throw error
-            }
+            await ValidateUsernameAsync(userRegistration.UserName);
+            await ValidateEmailAsync(userRegistration.Email);
 
             string encryptedPassword = EncryptPassword(userRegistration.Password);
 
@@ -49,19 +45,33 @@ namespace UserManagement.Services
             return user.Id;
         }
 
-        private bool ValidateEmail(string email)
+        private async Task ValidateEmailAsync(string email)
         {
-            // validate email
-            // check if email is unique
-            throw new NotImplementedException();
+            email = email.Trim().ToLower();
+
+            if (!MailAddress.TryCreate(email, out _))
+            {
+                throw new DomainValidationException("email address is not valid!");
+            }
+
+            var user = await _users.FindAsync(user => user.Email.Equals(email));
+            if (user.Any())
+            {
+                throw new DomainValidationException("email address already exists!");
+            }
+        }
+
+        private async Task ValidateUsernameAsync(string userName)
+        {
+            userName = userName.Trim().ToLower();
+            var user = await _users.FindAsync(user => user.UserName.Equals(userName));
+            if (user.Any())
+            {
+                throw new DomainValidationException("username already exists!");
+            }
         }
 
         private string EncryptPassword(string password)
-        {
-            throw new NotImplementedException();
-        }
-
-        private bool UsernameIsUnique(string userName)
         {
             throw new NotImplementedException();
         }

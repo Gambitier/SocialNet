@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using UserManagement.AuthManager;
 using UserManagement.DBConfiguration;
 using UserManagement.Extensions;
+using UserManagement.Middlewares;
 using UserManagement.Services;
 
 namespace UserManagement
@@ -32,6 +33,7 @@ namespace UserManagement
             services.AddSingleton<IDbClient, DbClient>();
             services.Configure<DbConfig>(Configuration);
             services.AddTransient<IUserServices, UserServices>();
+            services.AddTransient<ExceptionHandlingMiddleware>();
 
             services.AddSwaggerDocumentation();            
         }
@@ -46,9 +48,11 @@ namespace UserManagement
             }
 
             app.UseHttpsRedirection();
-            app.UseStatusCodePages();
+            //app.UseStatusCodePages();
 
             app.UseRouting();
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
+
             app.UseAuthentication();
             app.UseAuthorization();
 

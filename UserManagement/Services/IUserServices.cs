@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using UserManagement.DataModels;
 using UserManagement.RequestModels;
 
@@ -11,7 +12,7 @@ namespace UserManagement.Services
         /// </summary>
         /// <param name="userRegistration"></param>
         /// <returns>string: UserId</returns>
-        string RegisterUser(UserRegistration userRegistration);
+        Task<string> RegisterUserAsync(UserRegistration userRegistration);
 
         /// <summary>
         /// verifies username and password

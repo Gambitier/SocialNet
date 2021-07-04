@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UserManagement.AuthManager;
 using UserManagement.RequestModels;
 using UserManagement.Services;
@@ -43,9 +44,9 @@ namespace UserManagement.Controllers
 
         [Route("signup")]
         [HttpPost]
-        public IActionResult Signup([FromBody] UserRegistration userRegistration)
+        public async Task<IActionResult> SignupAsync([FromBody] UserRegistration userRegistration)
         {
-            var userId = _userServices.RegisterUser(userRegistration);
+            var userId = await _userServices.RegisterUserAsync(userRegistration);
             return Ok(new { userId });
         }
     }
