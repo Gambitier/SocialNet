@@ -51,13 +51,13 @@ namespace UserManagement.Services
 
             if (!MailAddress.TryCreate(email, out _))
             {
-                throw new DomainValidationException("email address is not valid!");
+                throw new DomainValidationException($"email address \"{email}\" is not valid!");
             }
 
             var user = await _users.FindAsync(user => user.Email.Equals(email));
             if (user.Any())
             {
-                throw new DomainValidationException("email address already exists!");
+                throw new DomainValidationException($"email address \"{email}\" already exists!");
             }
         }
 
@@ -67,7 +67,7 @@ namespace UserManagement.Services
             var user = await _users.FindAsync(user => user.UserName.Equals(userName));
             if (user.Any())
             {
-                throw new DomainValidationException("username already exists!");
+                throw new DomainValidationException($"username \"{userName}\" already exists!");
             }
         }
 
