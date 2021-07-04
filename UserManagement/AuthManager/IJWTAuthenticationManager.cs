@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace UserManagement.AuthManager
 {
-    interface IJWTAuthenticationManager
+    public interface IJWTAuthenticationManager
     {
         string Authenticate(string username, string password);
     }

@@ -23,6 +23,7 @@ namespace UserManagement.AuthManager
         {
             this.key = key;
         }
+
         public string Authenticate(string username, string password)
         {
             if(!Users.Any(a => a.Key == username && a.Value == password))
@@ -45,8 +46,10 @@ namespace UserManagement.AuthManager
                 )
             };
 
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
+            SecurityToken securityToken = tokenHandler.CreateToken(tokenDescriptor);
+            var token = tokenHandler.WriteToken(securityToken);
+
+            return token;
         }
     }
 }

@@ -14,23 +14,23 @@ namespace UserManagement.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
-        private readonly JWTAuthenticationManager jwtAuthenticationManager;
+        private readonly IJWTAuthenticationManager jwtAuthenticationManager;
 
-        public LoginController(JWTAuthenticationManager jWTAuthenticationManager)
+        public LoginController(IJWTAuthenticationManager jwtAuthenticationManager)
         {
-            jwtAuthenticationManager = jWTAuthenticationManager;
+            this.jwtAuthenticationManager = jwtAuthenticationManager;
         }
 
         // POST api/<AuthorizationController>
         [HttpPost]
         public IActionResult Login([FromBody] UserCredential userCreds)
         {
-            var token = jwtAuthenticationManager.Authenticate(userCreds.UserName, userCreds.Password);
+            string token = jwtAuthenticationManager.Authenticate(userCreds.UserName, userCreds.Password);
 
             if (token == null)
                 return Unauthorized();
 
-            return Ok(token);
+            return Ok(new { token });
         }
     }
 }
