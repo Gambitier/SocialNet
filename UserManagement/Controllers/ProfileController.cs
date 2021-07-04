@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace UserManagement.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ProfileController : ControllerBase

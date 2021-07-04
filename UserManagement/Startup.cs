@@ -21,7 +21,6 @@ namespace UserManagement
 {
     public class Startup
     {
-        private const string SecretKey = "this is my Secret Key Here";
 
         public Startup(IConfiguration configuration)
         {
@@ -34,19 +33,10 @@ namespace UserManagement
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddAuthentication(x => {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(x => {
-                x.RequireHttpsMetadata = false;
-                x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(SecretKey))
-                };
-            });
-            services.AddSingleton<IJWTAuthenticationManager>(new JWTAuthenticationManager(SecretKey));
+
+            string tokenKey = Configuration.GetValue<string>("TokenKey");
+            services.ConfigureAuthentication(tokenKey);
+            services.AddSingleton<IJWTAuthenticationManager>(new JWTAuthenticationManager(tokenKey));
 
             services.AddSwaggerDocumentation();            
         }
@@ -63,8 +53,8 @@ namespace UserManagement
             app.UseHttpsRedirection();
             app.UseStatusCodePages();
 
-            app.UseAuthentication();
             app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
