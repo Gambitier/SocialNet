@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 using UserManagement.AuthManager;
 using UserManagement.InputModels;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace UserManagement.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/user")]
     [ApiController]
     public class LoginController : ControllerBase
     {
@@ -21,7 +19,7 @@ namespace UserManagement.Controllers
             this.jwtAuthenticationManager = jwtAuthenticationManager;
         }
 
-        // POST api/<AuthorizationController>
+        [Route("login")]
         [HttpPost]
         public IActionResult Login([FromBody] UserCredential userCreds)
         {
@@ -31,6 +29,13 @@ namespace UserManagement.Controllers
                 return Unauthorized();
 
             return Ok(new { token });
+        }
+
+        [Route("register")]
+        [HttpPost]
+        public IActionResult Register([FromBody] UserRegistration userRegistration)
+        {
+            return Ok();
         }
     }
 }
