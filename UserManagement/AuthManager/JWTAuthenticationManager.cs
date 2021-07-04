@@ -1,43 +1,39 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using UserManagement.RequestModels;
+using UserManagement.Services;
 
 namespace UserManagement.AuthManager
 {
     public class JWTAuthenticationManager : IJWTAuthenticationManager
     {
-        private readonly IDictionary<string, string> Users = new Dictionary<string, string>
-        {
-            { "user1", "pass1" },
-            { "user2", "pass2" },
-            { "user3", "pass3" },
-        };
+        private readonly string _key;
+        private readonly IUserServices _userServices;
 
-        private readonly string key;
-
-        public JWTAuthenticationManager(string key)
+        public JWTAuthenticationManager(IConfiguration Configuration, IUserServices userServices)
         {
-            this.key = key;
+            _key = Configuration.GetValue<string>("TokenKey");
+            _userServices = userServices;
         }
 
-        public string Authenticate(string username, string password)
+        public string Authenticate(UserCredential userCreds)
         {
-            if(!Users.Any(a => a.Key == username && a.Value == password))
+            if(!_userServices.VerifyUserCredentials(userCreds))
             {
                 return null;
             }
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var tokenKey = Encoding.ASCII.GetBytes(key);
+            var tokenKey = Encoding.ASCII.GetBytes(_key);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, username)
+                    new Claim(ClaimTypes.Name, userCreds.UserName)
                 }),
                 Expires = DateTime.UtcNow.AddHours(1),
                 SigningCredentials = new SigningCredentials(

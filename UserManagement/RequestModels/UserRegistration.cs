@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace UserManagement.InputModels
+﻿namespace UserManagement.RequestModels
 {
     public class UserRegistration : UserCredential
     {

@@ -1,21 +1,12 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UserManagement.AuthManager;
+using UserManagement.DBConfiguration;
 using UserManagement.Extensions;
+using UserManagement.Services;
 
 namespace UserManagement
 {
@@ -36,7 +27,11 @@ namespace UserManagement
 
             string tokenKey = Configuration.GetValue<string>("TokenKey");
             services.ConfigureAuthentication(tokenKey);
-            services.AddSingleton<IJWTAuthenticationManager>(new JWTAuthenticationManager(tokenKey));
+
+            services.AddSingleton<IJWTAuthenticationManager, JWTAuthenticationManager>();
+            services.AddSingleton<IDbClient, DbClient>();
+            services.Configure<DbConfig>(Configuration);
+            services.AddTransient<IUserServices, UserServices>();
 
             services.AddSwaggerDocumentation();            
         }
