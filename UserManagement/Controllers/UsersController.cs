@@ -45,7 +45,8 @@ namespace UserManagement.Controllers
         [HttpPost]
         public IActionResult Signup([FromBody] UserRegistration userRegistration)
         {
-            return Ok();
+            var userId = _userServices.RegisterUser(userRegistration);
+            return Ok(new { userId });
         }
     }
 }
