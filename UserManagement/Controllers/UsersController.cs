@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using UserManagement.AuthManager;
@@ -17,16 +16,13 @@ namespace UserManagement.Controllers
         private readonly IJWTAuthenticationManager _jwtAuthenticationManager;
 
         private readonly IUserServices _userServices;
-        private readonly IEmailSender _emailSender;
 
         public UsersController(
             IJWTAuthenticationManager jwtAuthenticationManager,
-            IUserServices userServices,
-            IEmailSender emailSender)
+            IUserServices userServices)
         {
             _jwtAuthenticationManager = jwtAuthenticationManager;
             _userServices = userServices;
-            _emailSender = emailSender;
         }
 
         // GET api/<UsersController>/5
@@ -61,14 +57,6 @@ namespace UserManagement.Controllers
             if (!ModelState.IsValid) { return BadRequest(ModelState); }
 
             var userId = await _userServices.RegisterUserAsync(userRegistration);
-
-            await _emailSender.SendEmailAsync(
-                userRegistration.Email,
-                "welcome to usermanagement",
-                $"Welcome!! <br/><br/> " +
-                $"your username is \"{userRegistration.UserName.Trim().ToLower()}\" " +
-                $"and password is \"{userRegistration.Password}\"");
-
             return Ok(new { userId });
         }
     }

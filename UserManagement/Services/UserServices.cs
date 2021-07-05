@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using Microsoft.AspNetCore.Identity.UI.Services;
+using MongoDB.Driver;
 using System;
 using System.Linq;
 using System.Net.Mail;
@@ -15,11 +16,16 @@ namespace UserManagement.Services
     {
         private readonly IMongoCollection<User> _users;
         private readonly IEncryptionServices _encryptionServices;
+        private readonly IEmailSender _emailSender;
 
-        public UserServices(IDbClient dbClient, IEncryptionServices encryptionServices)
+        public UserServices(
+            IDbClient dbClient,
+            IEncryptionServices encryptionServices,
+            IEmailSender emailSender)
         {
             _users = dbClient.GetUserCollection();
             _encryptionServices = encryptionServices;
+            _emailSender = emailSender;
         }
 
         public async Task<string> RegisterUserAsync(UserRegistration userRegistration)
@@ -43,6 +49,13 @@ namespace UserManagement.Services
             };
 
             await _users.InsertOneAsync(user);
+
+            await _emailSender.SendEmailAsync(
+                userRegistration.Email,
+                "welcome to usermanagement",
+                $"Welcome!! <br/><br/> " +
+                $"your username is \"{userRegistration.UserName.Trim().ToLower()}\" " +
+                $"and password is \"{userRegistration.Password}\"");
 
             return user.Id;
         }
