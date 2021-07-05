@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UserManagement.AuthManager;
 using UserManagement.RequestModels;
+using UserManagement.ResponseModels;
 using UserManagement.Services;
 
 namespace UserManagement.Controllers
@@ -25,11 +26,12 @@ namespace UserManagement.Controllers
             _userServices = userServices;
         }
 
-        [HttpGet]
-        public IActionResult GetAllRegisteredUsers()
+        // GET api/<UsersController>/5
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUserAsync(string id)
         {
-            List<DataModels.User> users = _userServices.GetAllRegisteredUsers();
-            return Ok(users);
+            UserDto user = await _userServices.GetUserAsync(id);
+            return Ok(user);
         }
 
         [Route("login")]

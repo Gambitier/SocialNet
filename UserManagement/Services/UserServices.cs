@@ -8,6 +8,7 @@ using UserManagement.DataModels;
 using UserManagement.DBConfiguration;
 using UserManagement.Exceptions;
 using UserManagement.RequestModels;
+using UserManagement.ResponseModels;
 
 namespace UserManagement.Services
 {
@@ -20,11 +21,6 @@ namespace UserManagement.Services
         {
             _users = dbClient.GetUserCollection();
             _encryptionServices = encryptionServices;
-        }
-
-        public List<User> GetAllRegisteredUsers()
-        {
-            return _users.Find(user => true).ToList();
         }
 
         public async Task<string> RegisterUserAsync(UserRegistration userRegistration)
@@ -104,6 +100,27 @@ namespace UserManagement.Services
             }
 
             return true;
+        }
+
+        public async Task<UserDto> GetUserAsync(string id)
+        {
+            var query = await _users.FindAsync(user => user.Id.Equals(id));
+            User user = query.FirstOrDefault();
+
+            if(user == null)
+            {
+                throw new DomainNotFoundException($"User with ID \"{id}\" does not exist.");
+            }
+
+            var userDto = new UserDto
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                UserName = user.UserName
+            };
+
+            return userDto;
         }
     }
 }

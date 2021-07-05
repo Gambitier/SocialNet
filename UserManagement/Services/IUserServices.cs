@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using UserManagement.DataModels;
 using UserManagement.RequestModels;
+using UserManagement.ResponseModels;
 
 namespace UserManagement.Services
 {
@@ -22,9 +23,9 @@ namespace UserManagement.Services
         Task<bool> VerifyUserCredentialsAsync(UserCredential userCreds);
 
         /// <summary>
-        /// get all registered user's list
+        /// get registered user's details
         /// </summary>
-        /// <returns>List<User>: userList</returns>
-        List<User> GetAllRegisteredUsers();
+        /// <returns>UserDto: user</returns>
+        Task<UserDto> GetUserAsync(string id);
     }
 }
