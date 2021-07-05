@@ -38,6 +38,7 @@ namespace UserManagement.Services
                 FirstName = userRegistration.FirstName.Trim().ToLower(),
                 LastName = userRegistration.LastName.Trim().ToLower(),
                 UserName = userRegistration.UserName.Trim().ToLower(),
+                Email = userRegistration.Email.Trim().ToLower(),
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
             };

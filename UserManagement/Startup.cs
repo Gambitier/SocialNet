@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -7,6 +8,7 @@ using UserManagement.AuthManager;
 using UserManagement.DBConfiguration;
 using UserManagement.Extensions;
 using UserManagement.Middlewares;
+using UserManagement.SendGridConfigs;
 using UserManagement.Services;
 
 namespace UserManagement
@@ -32,6 +34,10 @@ namespace UserManagement
             services.AddSingleton<IJWTAuthenticationManager, JWTAuthenticationManager>();
             services.AddSingleton<IDbClient, DbClient>();
             services.Configure<DbConfig>(Configuration);
+            
+            services.AddTransient<IEmailSender, EmailSenderServices>();
+            services.Configure<AuthMessageSenderOptions>(Configuration);
+
             services.AddTransient<IUserServices, UserServices>();
             services.AddTransient<IEncryptionServices, EncryptionServices>();
             services.AddTransient<ExceptionHandlingMiddleware>();
