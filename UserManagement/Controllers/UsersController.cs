@@ -39,6 +39,8 @@ namespace UserManagement.Controllers
         [HttpPost]
         public async Task<IActionResult> LoginAsync([FromBody] UserCredential userCreds)
         {
+            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+
             string token = await _jwtAuthenticationManager.AuthenticateAsync(userCreds);
 
             if (token == null) {
@@ -53,6 +55,8 @@ namespace UserManagement.Controllers
         [HttpPost]
         public async Task<IActionResult> SignupAsync([FromBody] UserRegistration userRegistration)
         {
+            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+
             var userId = await _userServices.RegisterUserAsync(userRegistration);
             return Ok(new { userId });
         }
