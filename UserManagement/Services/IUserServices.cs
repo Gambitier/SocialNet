@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using UserManagement.DataModels;
+﻿using System.Threading.Tasks;
 using UserManagement.RequestModels;
 using UserManagement.ResponseModels;
 
