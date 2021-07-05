@@ -42,7 +42,7 @@ namespace UserManagement.Controllers
             string token = await _jwtAuthenticationManager.AuthenticateAsync(userCreds);
 
             if (token == null) {
-                return Unauthorized();
+                return BadRequest(new { message = "Username or password is incorrect" });
             }
 
             return Ok(new { token });
