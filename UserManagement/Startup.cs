@@ -33,6 +33,7 @@ namespace UserManagement
             services.AddSingleton<IDbClient, DbClient>();
             services.Configure<DbConfig>(Configuration);
             services.AddTransient<IUserServices, UserServices>();
+            services.AddTransient<IEncryptionServices, EncryptionServices>();
             services.AddTransient<ExceptionHandlingMiddleware>();
 
             services.AddSwaggerDocumentation();            
@@ -48,10 +49,10 @@ namespace UserManagement
             }
 
             app.UseHttpsRedirection();
-            //app.UseStatusCodePages();
 
             app.UseRouting();
             app.UseMiddleware<ExceptionHandlingMiddleware>();
+            app.UseStatusCodePages();
 
             app.UseAuthentication();
             app.UseAuthorization();

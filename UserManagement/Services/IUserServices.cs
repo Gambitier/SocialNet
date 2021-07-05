@@ -19,7 +19,7 @@ namespace UserManagement.Services
         /// </summary>
         /// <param name="userCreds"></param>
         /// <returns>bool: userIsVerified</returns>
-        bool VerifyUserCredentials(UserCredential userCreds);
+        Task<bool> VerifyUserCredentialsAsync(UserCredential userCreds);
 
         /// <summary>
         /// get all registered user's list

@@ -4,6 +4,7 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using UserManagement.RequestModels;
 using UserManagement.Services;
 
@@ -20,9 +21,10 @@ namespace UserManagement.AuthManager
             _userServices = userServices;
         }
 
-        public string Authenticate(UserCredential userCreds)
+        public async Task<string> AuthenticateAsync(UserCredential userCreds)
         {
-            if(!_userServices.VerifyUserCredentials(userCreds))
+            bool userIsVerified = await _userServices.VerifyUserCredentialsAsync(userCreds);
+            if (!userIsVerified)
             {
                 return null;
             }

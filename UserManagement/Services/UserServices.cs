@@ -14,10 +14,12 @@ namespace UserManagement.Services
     public class UserServices : IUserServices
     {
         private readonly IMongoCollection<User> _users;
+        private readonly IEncryptionServices _encryptionServices;
 
-        public UserServices(IDbClient dbClient)
+        public UserServices(IDbClient dbClient, IEncryptionServices encryptionServices)
         {
             _users = dbClient.GetUserCollection();
+            _encryptionServices = encryptionServices;
         }
 
         public List<User> GetAllRegisteredUsers()
@@ -30,17 +32,21 @@ namespace UserManagement.Services
             await ValidateUsernameAsync(userRegistration.UserName);
             await ValidateEmailAsync(userRegistration.Email);
 
-            string encryptedPassword = EncryptPassword(userRegistration.Password);
+            _encryptionServices.CreatePasswordHash(
+                userRegistration.Password,
+                out byte[] passwordHash,
+                out byte[] passwordSalt);
 
             var user = new User
             {
                 FirstName = userRegistration.FirstName.Trim().ToLower(),
                 LastName = userRegistration.LastName.Trim().ToLower(),
                 UserName = userRegistration.UserName.Trim().ToLower(),
-                Password = encryptedPassword
+                PasswordHash = passwordHash,
+                PasswordSalt = passwordSalt,
             };
 
-            _users.InsertOne(user);
+            await _users.InsertOneAsync(user);
 
             return user.Id;
         }
@@ -51,13 +57,13 @@ namespace UserManagement.Services
 
             if (!MailAddress.TryCreate(email, out _))
             {
-                throw new DomainValidationException($"email address \"{email}\" is not valid!");
+                throw new DomainValidationException($"Email address \"{email}\" is not valid!");
             }
 
             var user = await _users.FindAsync(user => user.Email.Equals(email));
             if (user.Any())
             {
-                throw new DomainValidationException($"email address \"{email}\" already exists!");
+                throw new DomainValidationException($"Email address \"{email}\" already exists!");
             }
         }
 
@@ -67,18 +73,37 @@ namespace UserManagement.Services
             var user = await _users.FindAsync(user => user.UserName.Equals(userName));
             if (user.Any())
             {
-                throw new DomainValidationException($"username \"{userName}\" already exists!");
+                throw new DomainValidationException($"Username \"{userName}\" already exists!");
             }
         }
 
-        private string EncryptPassword(string password)
+        public async Task<bool> VerifyUserCredentialsAsync(UserCredential userCreds)
         {
-            throw new NotImplementedException();
-        }
+            if (string.IsNullOrEmpty(userCreds.UserName))
+            {
+                throw new ArgumentException("Value cannot be empty or whitespace.", nameof(userCreds.UserName));
+            }
 
-        public bool VerifyUserCredentials(UserCredential userCreds)
-        {
-            throw new NotImplementedException();
+            var userName = userCreds.UserName.Trim().ToLower();
+            var query = await _users.FindAsync(user => user.UserName.Equals(userName));
+            var user = query.FirstOrDefault();
+
+            if (user == null)
+            {
+                throw new DomainNotFoundException($"User with username \"{userName}\" not found");
+            }
+
+            var passwordIsVerified = _encryptionServices.VerifyPasswordHash(
+                userCreds.Password,
+                user.PasswordHash,
+                user.PasswordSalt);
+
+            if (!passwordIsVerified)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

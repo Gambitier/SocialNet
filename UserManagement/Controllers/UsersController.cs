@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UserManagement.AuthManager;
@@ -7,6 +8,7 @@ using UserManagement.Services;
 
 namespace UserManagement.Controllers
 {
+    [Authorize]
     [Route("api/users")]
     [ApiController]
     public class UsersController : ControllerBase
@@ -31,18 +33,21 @@ namespace UserManagement.Controllers
         }
 
         [Route("login")]
+        [AllowAnonymous]
         [HttpPost]
-        public IActionResult Login([FromBody] UserCredential userCreds)
+        public async Task<IActionResult> LoginAsync([FromBody] UserCredential userCreds)
         {
-            string token = _jwtAuthenticationManager.Authenticate(userCreds);
+            string token = await _jwtAuthenticationManager.AuthenticateAsync(userCreds);
 
-            if (token == null)
+            if (token == null) {
                 return Unauthorized();
+            }
 
             return Ok(new { token });
         }
 
         [Route("signup")]
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> SignupAsync([FromBody] UserRegistration userRegistration)
         {

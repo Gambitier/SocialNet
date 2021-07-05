@@ -1,9 +1,10 @@
-﻿using UserManagement.RequestModels;
+﻿using System.Threading.Tasks;
+using UserManagement.RequestModels;
 
 namespace UserManagement.AuthManager
 {
     public interface IJWTAuthenticationManager
     {
-        string Authenticate(UserCredential userCreds);
+        Task<string> AuthenticateAsync(UserCredential userCreds);
     }
 }
