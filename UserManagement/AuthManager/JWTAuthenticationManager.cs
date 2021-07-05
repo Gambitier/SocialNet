@@ -23,7 +23,9 @@ namespace UserManagement.AuthManager
 
         public async Task<string> AuthenticateAsync(UserCredential userCreds)
         {
-            bool userIsVerified = await _userServices.VerifyUserCredentialsAsync(userCreds);
+            var response = await _userServices.VerifyUserCredentialsAsync(userCreds);
+            bool userIsVerified = response.Item1;
+            string userId = response.Item2;
             if (!userIsVerified)
             {
                 return null;
@@ -35,7 +37,8 @@ namespace UserManagement.AuthManager
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, userCreds.UserName)
+                    new Claim(ClaimTypes.Name, userCreds.UserName),
+                    new Claim("UserId", userId)
                 }),
                 Expires = DateTime.UtcNow.AddHours(1),
                 SigningCredentials = new SigningCredentials(

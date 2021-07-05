@@ -73,7 +73,7 @@ namespace UserManagement.Services
             }
         }
 
-        public async Task<bool> VerifyUserCredentialsAsync(UserCredential userCreds)
+        public async Task<Tuple<bool,string>> VerifyUserCredentialsAsync(UserCredential userCreds)
         {
             if (string.IsNullOrEmpty(userCreds.UserName))
             {
@@ -82,7 +82,7 @@ namespace UserManagement.Services
 
             var userName = userCreds.UserName.Trim().ToLower();
             var query = await _users.FindAsync(user => user.UserName.Equals(userName));
-            var user = query.FirstOrDefault();
+            User user = query.FirstOrDefault();
 
             if (user == null)
             {
@@ -96,10 +96,10 @@ namespace UserManagement.Services
 
             if (!passwordIsVerified)
             {
-                return false;
+                return new Tuple<bool, string>(false, string.Empty);
             }
 
-            return true;
+            return new Tuple<bool, string>(true, user.Id);
         }
 
         public async Task<UserDto> GetUserAsync(string id)

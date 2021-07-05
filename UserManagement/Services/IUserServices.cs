@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using UserManagement.RequestModels;
 using UserManagement.ResponseModels;
 
@@ -17,8 +18,8 @@ namespace UserManagement.Services
         /// verifies username and password
         /// </summary>
         /// <param name="userCreds"></param>
-        /// <returns>bool: userIsVerified</returns>
-        Task<bool> VerifyUserCredentialsAsync(UserCredential userCreds);
+        /// <returns>bool: userIsVerified & string: userID</returns>
+        Task<Tuple<bool, string>> VerifyUserCredentialsAsync(UserCredential userCreds);
 
         /// <summary>
         /// get registered user's details
