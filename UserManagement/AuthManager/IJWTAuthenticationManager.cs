@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using UserManagement.RequestModels;
+using UserManagement.Services.Services.RequestModels;
 
 namespace UserManagement.AuthManager
 {

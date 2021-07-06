@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Options;
 using MongoDB.Driver;
-using UserManagement.DataModels;
+using UserManagement.Persistence.DataModels;
 
-namespace UserManagement.DBConfiguration
+namespace UserManagement.Persistence.DBConfiguration
 {
     public class DbClient : IDbClient
     {

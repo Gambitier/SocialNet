@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using UserManagement.AuthManager;
-using UserManagement.RequestModels;
-using UserManagement.ResponseModels;
-using UserManagement.Services;
+using UserManagement.Services.Services;
+using UserManagement.Services.Services.RequestModels;
+using UserManagement.Services.Services.ResponseModels;
 
 namespace UserManagement.Controllers
 {

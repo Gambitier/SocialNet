@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UserManagement.Exceptions
+namespace UserManagement.Services.Exceptions
 {
     public class DomainException : Exception
     {

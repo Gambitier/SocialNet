@@ -4,13 +4,13 @@ using System;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
-using UserManagement.DataModels;
-using UserManagement.DBConfiguration;
-using UserManagement.Exceptions;
-using UserManagement.RequestModels;
-using UserManagement.ResponseModels;
+using UserManagement.Persistence.DataModels;
+using UserManagement.Persistence.DBConfiguration;
+using UserManagement.Services.Exceptions;
+using UserManagement.Services.Services.RequestModels;
+using UserManagement.Services.Services.ResponseModels;
 
-namespace UserManagement.Services
+namespace UserManagement.Services.Services
 {
     public class UserServices : IUserServices
     {

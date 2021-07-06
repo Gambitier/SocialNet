@@ -1,4 +1,4 @@
-﻿namespace UserManagement.SendGridConfigs
+﻿namespace UserManagement.Services.SendGridConfigs
 {
     public class AuthMessageSenderOptions
     {

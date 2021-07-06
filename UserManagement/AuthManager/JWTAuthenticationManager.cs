@@ -5,8 +5,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using UserManagement.RequestModels;
-using UserManagement.Services;
+using UserManagement.Services.Services;
+using UserManagement.Services.Services.RequestModels;
 
 namespace UserManagement.AuthManager
 {

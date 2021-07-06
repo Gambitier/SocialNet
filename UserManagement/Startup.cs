@@ -5,11 +5,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using UserManagement.AuthManager;
-using UserManagement.DBConfiguration;
+using UserManagement.Persistence.DBConfiguration;
 using UserManagement.Extensions;
 using UserManagement.Middlewares;
-using UserManagement.SendGridConfigs;
-using UserManagement.Services;
+using UserManagement.Services.SendGridConfigs;
+using UserManagement.Services.Services;
 
 namespace UserManagement
 {

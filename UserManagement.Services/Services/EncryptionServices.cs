@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace UserManagement.Services
+namespace UserManagement.Services.Services
 {
     public class EncryptionServices : IEncryptionServices
     {

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using UserManagement.RequestModels;
-using UserManagement.ResponseModels;
+using UserManagement.Services.Services.RequestModels;
+using UserManagement.Services.Services.ResponseModels;
 
-namespace UserManagement.Services
+namespace UserManagement.Services.Services
 {
     public interface IUserServices
     {

@@ -1,4 +1,4 @@
-﻿namespace UserManagement.DBConfiguration
+﻿namespace UserManagement.Persistence.DBConfiguration
 {
     public class DbConfig
     {

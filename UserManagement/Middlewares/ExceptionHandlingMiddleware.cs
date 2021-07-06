@@ -2,7 +2,7 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using UserManagement.Exceptions;
+using UserManagement.Services.Exceptions;
 
 namespace UserManagement.Middlewares
 {

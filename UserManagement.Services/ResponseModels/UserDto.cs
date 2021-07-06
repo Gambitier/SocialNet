@@ -1,4 +1,4 @@
-﻿namespace UserManagement.ResponseModels
+﻿namespace UserManagement.Services.Services.ResponseModels
 {
     public class UserDto
     {

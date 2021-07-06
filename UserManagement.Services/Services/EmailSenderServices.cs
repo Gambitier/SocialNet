@@ -4,9 +4,9 @@ using Microsoft.Extensions.Options;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using System.Threading.Tasks;
-using UserManagement.SendGridConfigs;
+using UserManagement.Services.SendGridConfigs;
 
-namespace UserManagement.Services
+namespace UserManagement.Services.Services
 {
     public class EmailSenderServices : IEmailSender
     {

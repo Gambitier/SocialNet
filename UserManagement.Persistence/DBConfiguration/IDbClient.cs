@@ -1,7 +1,7 @@
 ﻿using MongoDB.Driver;
-using UserManagement.DataModels;
+using UserManagement.Persistence.DataModels;
 
-namespace UserManagement.DBConfiguration
+namespace UserManagement.Persistence.DBConfiguration
 {
     public interface IDbClient
     {

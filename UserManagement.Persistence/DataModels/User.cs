@@ -1,6 +1,6 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 
-namespace UserManagement.DataModels
+namespace UserManagement.Persistence.DataModels
 {
     public class User
     {

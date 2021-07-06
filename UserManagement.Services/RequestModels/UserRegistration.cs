@@ -1,4 +1,4 @@
-﻿namespace UserManagement.RequestModels
+﻿namespace UserManagement.Services.Services.RequestModels
 {
     public class UserRegistration : UserCredential
     {
