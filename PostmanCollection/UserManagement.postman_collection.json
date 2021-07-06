@@ -1,0 +1,182 @@
+{
+	"info": {
+		"_postman_id": "6929ef4b-2720-4772-aafa-19cad39179c6",
+		"name": "UserManagement",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "signup",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code is 200 OK\", function(){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"let userId = null;\r",
+							"pm.test(\"userId is retrieved\", () => {\r",
+							"  const responseJson = pm.response.json();\r",
+							"  responseJson.hasOwnProperty(\"userId\");\r",
+							"  pm.expect(responseJson.userId).to.not.eql(null);\r",
+							"  pm.expect(responseJson.userId).to.not.eql(undefined);\r",
+							"  pm.expect(responseJson.userId).to.not.eql(\"\");\r",
+							"  userId = responseJson.userId;\r",
+							"});\r",
+							"\r",
+							"pm.collectionVariables.set('LoggedInUserId', `${userId}`);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "accept",
+						"value": "*/*"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"newuserr@yopmail.com\",\r\n    \"userName\":\"newusernameHeree\",\r\n    \"password\":\"Test@123\",\r\n    \"firstName\":\"firstName\",\r\n    \"lastName\":\"lastName\"\r\n}"
+				},
+				"url": {
+					"raw": "{{BaseUrl}}/api/users/signup",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code is 200 OK\", function(){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"let jwt = null;\r",
+							"pm.test(\"JWT token is retrieved\", () => {\r",
+							"  const responseJson = pm.response.json();\r",
+							"  responseJson.hasOwnProperty(\"token\");\r",
+							"  pm.expect(responseJson.token).to.not.eql(null);\r",
+							"  pm.expect(responseJson.token).to.not.eql(undefined);\r",
+							"  pm.expect(responseJson.token).to.not.eql(\"\");\r",
+							"  jwt = responseJson.token;\r",
+							"});\r",
+							"\r",
+							"pm.collectionVariables.set('UserManagement-JWT', `Bearer ${jwt}`);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "accept",
+						"value": "*/*"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"userName\":\"newusernameHeree\",\"password\":\"Test@123\"}"
+				},
+				"url": {
+					"raw": "{{BaseUrl}}/api/users/login",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "userdetails",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{UserManagement-JWT}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{BaseUrl}}/api/users/{{LoggedInUserId}}",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"{{LoggedInUserId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BaseUrl",
+			"value": "https://localhost:44390"
+		},
+		{
+			"key": "UserManagement-JWT",
+			"value": "null"
+		},
+		{
+			"key": "LoggedInUserId",
+			"value": "null"
+		}
+	]
+}
