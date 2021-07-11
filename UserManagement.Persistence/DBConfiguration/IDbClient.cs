@@ -5,6 +5,6 @@ namespace UserManagement.Persistence.DBConfiguration
 {
     public interface IDbClient
     {
-        IMongoCollection<User> GetUserCollection();
+        IMongoCollection<T> DbCollection<T>() where T : BaseModel;
     }
 }
