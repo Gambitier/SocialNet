@@ -10,6 +10,9 @@ using UserManagement.Extensions;
 using UserManagement.Middlewares;
 using UserManagement.Services.SendGridConfigs;
 using UserManagement.Services.Services;
+using UserManagement.Persistence.IRepository;
+using UserManagement.Persistence.Repository;
+using Microsoft.Extensions.Logging;
 
 namespace UserManagement
 {
@@ -38,9 +41,13 @@ namespace UserManagement
             services.AddTransient<IEmailSender, EmailSenderServices>();
             services.Configure<AuthMessageSenderOptions>(Configuration);
 
+            services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IUserServices, UserServices>();
             services.AddTransient<IEncryptionServices, EncryptionServices>();
             services.AddTransient<ExceptionHandlingMiddleware>();
+
+            services.AddLogging();
+            services.AddSingleton(typeof(ILogger), typeof(Logger<Startup>));
 
             services.AddSwaggerDocumentation();            
         }

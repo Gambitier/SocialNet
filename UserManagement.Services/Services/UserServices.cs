@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity.UI.Services;
-using MongoDB.Driver;
 using System;
-using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
 using UserManagement.Persistence.DataModels;
-using UserManagement.Persistence.DBConfiguration;
+using UserManagement.Persistence.IRepository;
 using UserManagement.Services.Exceptions;
 using UserManagement.Services.Services.RequestModels;
 using UserManagement.Services.Services.ResponseModels;
@@ -14,16 +12,16 @@ namespace UserManagement.Services.Services
 {
     public class UserServices : IUserServices
     {
-        private readonly IMongoCollection<User> _users;
+        private readonly IUserRepository _userRepository;
         private readonly IEncryptionServices _encryptionServices;
         private readonly IEmailSender _emailSender;
 
         public UserServices(
-            IDbClient dbClient,
+            IUserRepository userRepository,
             IEncryptionServices encryptionServices,
             IEmailSender emailSender)
         {
-            _users = dbClient.GetUserCollection();
+            _userRepository = userRepository;
             _encryptionServices = encryptionServices;
             _emailSender = emailSender;
         }
@@ -48,7 +46,7 @@ namespace UserManagement.Services.Services
                 PasswordSalt = passwordSalt,
             };
 
-            await _users.InsertOneAsync(user);
+            await _userRepository.Add(user);
 
             await _emailSender.SendEmailAsync(
                 userRegistration.Email,
@@ -69,8 +67,8 @@ namespace UserManagement.Services.Services
                 throw new DomainValidationException($"Email address \"{email}\" is not valid!");
             }
 
-            var user = await _users.FindAsync(user => user.Email.Equals(email));
-            if (user.Any())
+            var user = await _userRepository.GetByEmail(email);
+            if (user != null)
             {
                 throw new DomainValidationException($"Email address \"{email}\" already exists!");
             }
@@ -79,8 +77,8 @@ namespace UserManagement.Services.Services
         private async Task ValidateUsernameAsync(string userName)
         {
             userName = userName.Trim().ToLower();
-            var user = await _users.FindAsync(user => user.UserName.Equals(userName));
-            if (user.Any())
+            User user = await _userRepository.GetByUserName(userName);
+            if (user != null)
             {
                 throw new DomainValidationException($"Username \"{userName}\" already exists!");
             }
@@ -93,10 +91,8 @@ namespace UserManagement.Services.Services
                 throw new ArgumentException("Value cannot be empty or whitespace.", nameof(userCreds.UserName));
             }
 
-            var userName = userCreds.UserName.Trim().ToLower();
-            var query = await _users.FindAsync(user => user.UserName.Equals(userName));
-            User user = query.FirstOrDefault();
-
+            string userName = userCreds.UserName.Trim().ToLower();
+            User user = await _userRepository.GetByUserName(userName);
             if (user == null)
             {
                 throw new DomainNotFoundException($"User with username \"{userName}\" not found");
@@ -117,8 +113,7 @@ namespace UserManagement.Services.Services
 
         public async Task<UserDto> GetUserAsync(string id)
         {
-            var query = await _users.FindAsync(user => user.Id.Equals(id));
-            User user = query.FirstOrDefault();
+            var user = await _userRepository.GetById(id);
 
             if(user == null)
             {

@@ -8,9 +8,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserManagement", "UserManag
 		{6925794B-909F-47DB-8942-62028E4B6233} = {6925794B-909F-47DB-8942-62028E4B6233}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserManagement.Persistence", "UserManagement.Persistence\UserManagement.Persistence.csproj", "{6925794B-909F-47DB-8942-62028E4B6233}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserManagement.Persistence", "UserManagement.Persistence\UserManagement.Persistence.csproj", "{6925794B-909F-47DB-8942-62028E4B6233}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserManagement.Services", "UserManagement.Services\UserManagement.Services.csproj", "{620D0B64-1394-429D-8CD7-9E94A59669FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserManagement.Services", "UserManagement.Services\UserManagement.Services.csproj", "{620D0B64-1394-429D-8CD7-9E94A59669FB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
