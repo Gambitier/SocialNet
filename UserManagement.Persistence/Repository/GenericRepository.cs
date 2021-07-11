@@ -42,7 +42,7 @@ namespace UserManagement.Persistence.Repository
             throw new NotImplementedException();
         }
 
-        public virtual Task<T> GetById(string id)
+        public virtual Task<T> GetByIdAsync(string id)
         {
             throw new NotImplementedException();
         }

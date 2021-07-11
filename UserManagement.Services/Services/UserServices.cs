@@ -113,7 +113,7 @@ namespace UserManagement.Services.Services
 
         public async Task<UserDto> GetUserAsync(string id)
         {
-            var user = await _userRepository.GetById(id);
+            User user = await _userRepository.GetByIdAsync(id);
 
             if(user == null)
             {

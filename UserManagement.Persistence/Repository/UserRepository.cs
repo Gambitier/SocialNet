@@ -75,7 +75,7 @@ namespace UserManagement.Persistence.Repository
             }
         }
 
-        public override async Task<User> GetById(string id)
+        public override async Task<User> GetByIdAsync(string id)
         {
             try
             {
@@ -85,7 +85,7 @@ namespace UserManagement.Persistence.Repository
             catch (Exception ex)
             {
                 _logger.LogError(ex, "{RepositoryName} GetById method error", typeof(UserRepository));
-                return new User();
+                return null;
             }
         }
 
