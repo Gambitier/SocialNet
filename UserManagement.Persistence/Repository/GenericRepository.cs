@@ -24,7 +24,7 @@ namespace UserManagement.Persistence.Repository
             Collection = _dbClient.DbCollection<T>();
         }
 
-        public virtual async Task<T> Add(T entity)
+        public virtual async Task<T> AddAsync(T entity)
         {
             await Collection.InsertOneAsync(entity);
             return entity;

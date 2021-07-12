@@ -29,6 +29,47 @@ namespace UserManagement.Tests
         }
 
         [TestMethod]
+        public async Task RegisterUserAsync_ShouldAddUserToDbAndReturnUserId()
+        {
+            //arrange
+            byte[] PasswordHash = null, PasswordSalt = null;
+
+            var Userid = new Guid().ToString();
+            const string Username = "gambitier",
+                         FirstName = "Akash",
+                         LastName = "Jadhav",
+                         Password = "Test@123",
+                         Email = "akash@yopmail.com";
+
+            UserRegistration userRegistrationData = new()
+            {
+                UserName = Username,
+                FirstName = FirstName,
+                LastName = LastName,
+                Email = Email,
+                Password = Password
+            };
+
+            User addUserResponse = new()
+            {
+                Id = Userid,
+            };
+
+            _userRepository.Setup(x => x.GetByUserName(Username)).ReturnsAsync((User)null);
+            _userRepository.Setup(x => x.GetByEmail(Email)).ReturnsAsync((User)null);
+            _userRepository.Setup(x => x.AddAsync(It.IsAny<User>())).ReturnsAsync(addUserResponse);
+
+            _encryptionServices.Setup(x =>
+                x.CreatePasswordHash(userRegistrationData.Password, out PasswordHash, out PasswordSalt)).Verifiable();
+
+            //act
+            string registeredUserId = await _sut.RegisterUserAsync(userRegistrationData);
+
+            //assert
+            Assert.AreEqual(Userid, registeredUserId);
+        }
+
+        [TestMethod]
         public async Task VerifyUserCredentialsAsync_ShouldReturnUserDto_WhenUserExists()
         {
             //arrange
@@ -73,7 +114,6 @@ namespace UserManagement.Tests
             Assert.IsTrue(isVerified);
             Assert.AreEqual(user.Id, userId);
         }
-
 
         [TestMethod]
         public async Task GetUserAsync_ShouldReturnUserDto_WhenUserExists()

@@ -13,7 +13,7 @@ namespace UserManagement.Persistence.Repository
     {
         public UserRepository(IDbClient dbClient, ILogger logger) : base(dbClient, logger) { }
 
-        public override async Task<User> Add(User entity)
+        public override async Task<User> AddAsync(User entity)
         {
             try
             {
@@ -57,7 +57,7 @@ namespace UserManagement.Persistence.Repository
             catch (Exception ex)
             {
                 _logger.LogError(ex, "{RepositoryName} GetByEmail method error", typeof(UserRepository));
-                return new User();
+                return null;
             }
         }
 
@@ -71,7 +71,7 @@ namespace UserManagement.Persistence.Repository
             catch (Exception ex)
             {
                 _logger.LogError(ex, "{RepositoryName} GetByUserName method error", typeof(UserRepository));
-                return new User();
+                return null;
             }
         }
 

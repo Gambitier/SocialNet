@@ -7,7 +7,7 @@ namespace UserManagement.Persistence.IRepository
     {
         Task<IEnumerable<T>> All();
         Task<T> GetByIdAsync(string id);
-        Task<T> Add(T entity);
+        Task<T> AddAsync(T entity);
         Task<bool> Delete(string id);
         Task<bool> Upsert(T entity);
     }
