@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace UserManagement.Services.Services
@@ -14,7 +15,7 @@ namespace UserManagement.Services.Services
                 throw new ArgumentException("Value cannot be empty or whitespace only string.", nameof(password));
 
 
-            using (var hmac = new System.Security.Cryptography.HMACSHA512())
+            using (var hmac = new HMACSHA512())
             {
                 passwordSalt = hmac.Key;
                 passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
