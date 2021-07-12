@@ -12,6 +12,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserManagement.Persistence"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserManagement.Services", "UserManagement.Services\UserManagement.Services.csproj", "{620D0B64-1394-429D-8CD7-9E94A59669FB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserManagement.Tests", "UserManagement.Tests\UserManagement.Tests.csproj", "{F9936F73-8931-43E5-968E-430125E9FAC7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,6 +32,10 @@ Global
 		{620D0B64-1394-429D-8CD7-9E94A59669FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{620D0B64-1394-429D-8CD7-9E94A59669FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{620D0B64-1394-429D-8CD7-9E94A59669FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9936F73-8931-43E5-968E-430125E9FAC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9936F73-8931-43E5-968E-430125E9FAC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9936F73-8931-43E5-968E-430125E9FAC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9936F73-8931-43E5-968E-430125E9FAC7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

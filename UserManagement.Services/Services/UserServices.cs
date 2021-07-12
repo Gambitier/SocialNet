@@ -36,7 +36,7 @@ namespace UserManagement.Services.Services
                 out byte[] passwordHash,
                 out byte[] passwordSalt);
 
-            var user = new User
+            User user = new()
             {
                 FirstName = userRegistration.FirstName.Trim().ToLower(),
                 LastName = userRegistration.LastName.Trim().ToLower(),
@@ -46,7 +46,7 @@ namespace UserManagement.Services.Services
                 PasswordSalt = passwordSalt,
             };
 
-            await _userRepository.Add(user);
+            User addedUser = await _userRepository.AddAsync(user);
 
             await _emailSender.SendEmailAsync(
                 userRegistration.Email,
@@ -55,7 +55,7 @@ namespace UserManagement.Services.Services
                 $"your username is \"{userRegistration.UserName.Trim().ToLower()}\" " +
                 $"and password is \"{userRegistration.Password}\"");
 
-            return user.Id;
+            return addedUser.Id;
         }
 
         private async Task ValidateEmailAsync(string email)
@@ -113,7 +113,7 @@ namespace UserManagement.Services.Services
 
         public async Task<UserDto> GetUserAsync(string id)
         {
-            var user = await _userRepository.GetById(id);
+            User user = await _userRepository.GetByIdAsync(id);
 
             if(user == null)
             {

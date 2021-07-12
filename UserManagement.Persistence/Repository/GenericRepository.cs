@@ -24,7 +24,7 @@ namespace UserManagement.Persistence.Repository
             Collection = _dbClient.DbCollection<T>();
         }
 
-        public virtual async Task<T> Add(T entity)
+        public virtual async Task<T> AddAsync(T entity)
         {
             await Collection.InsertOneAsync(entity);
             return entity;
@@ -42,7 +42,7 @@ namespace UserManagement.Persistence.Repository
             throw new NotImplementedException();
         }
 
-        public virtual Task<T> GetById(string id)
+        public virtual Task<T> GetByIdAsync(string id)
         {
             throw new NotImplementedException();
         }
