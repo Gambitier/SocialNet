@@ -1,5 +1,6 @@
 import React from "react";
 import { Button, Container, Form, Header } from 'semantic-ui-react'
+import { signupUserHandler } from "../API/users"
 
 class Signup extends React.Component {
   state = {
@@ -19,13 +20,17 @@ class Signup extends React.Component {
       alert('all the fields are mandatory')
       return
     }
-    this.props.signupUserHandler(this.state)
     this.setState({
       userName: '',
       firstName: '',
       lastName: '',
       email: '',
       password: '',
+    })
+    signupUserHandler(this.state).then(() => {
+      this.props.history.push('/login')
+    }).catch((err) => {
+      console.log(err);
     })
   }
 

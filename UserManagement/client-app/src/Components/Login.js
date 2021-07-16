@@ -1,5 +1,6 @@
 import React from 'react'
 import { Button, Container, Form, Header } from 'semantic-ui-react'
+import { loginUserHandler } from '../API/users'
 
 class Login extends React.Component {
   state = {
@@ -16,11 +17,22 @@ class Login extends React.Component {
       alert('all the fields are mandatory')
       return
     }
-    this.props.loginUserHandler(this.state)
     this.setState({
       userName: '',
       password: '',
     })
+    loginUserHandler(this.state)
+      .then((response) => {
+        const LOCAL_STORAGE_KEY = 'BearerToken'
+        localStorage.setItem(
+          LOCAL_STORAGE_KEY,
+          JSON.stringify(response.data.token)
+        )
+        this.props.history.push('/home')
+      })
+      .catch((error) => {
+        console.log(error)
+      })
   }
 
   render() {
