@@ -19,6 +19,9 @@ function App() {
     const response = await API.post('/users/login', userCreds)
     console.log('user logged in: ', userCreds)
     console.log('server response: ', response.data)
+
+    const LOCAL_STORAGE_KEY = "BearerToken"
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(response.data.token))
   }
 
   return (
