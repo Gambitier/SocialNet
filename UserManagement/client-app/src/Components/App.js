@@ -3,6 +3,7 @@ import Login from './Login'
 import Home from './Home'
 import AppHeader from './AppHeader'
 import { Container } from "semantic-ui-react";
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 
 function App() {
   const signupUserHandler = (user) => {
@@ -15,10 +16,29 @@ function App() {
 
   return (
     <Container>
-      <AppHeader />
-      <Signup signupUserHandler={signupUserHandler} />
-      <Login loginUserHandler={loginUserHandler} />
-      <Home />
+      <Router>
+        <AppHeader />
+        <Switch>
+          <Route
+            path='/signup'
+            render={(props) => (
+              <Signup {...props} signupUserHandler={signupUserHandler} />
+            )}
+          />
+          <Route
+            path='/login'
+            render={(props) => (
+              <Login {...props} loginUserHandler={loginUserHandler} />
+            )}
+          />
+          <Route
+            path='/home'
+            render={(props) => (
+              <Home {...props} />
+            )}
+          />
+        </Switch>
+      </Router>
     </Container>
   )
 }
