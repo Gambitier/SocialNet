@@ -10,4 +10,8 @@
     <PackageReference Include="MongoDB.Driver" Version="2.12.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\UserManagement.Services\UserManagement.Services.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -2,9 +2,8 @@
 using System;
 using System.Net.Mail;
 using System.Threading.Tasks;
-using UserManagement.Persistence.DataModels;
-using UserManagement.Persistence.IRepository;
 using UserManagement.Services.Exceptions;
+using UserManagement.Services.IRepository;
 using UserManagement.Services.Services.RequestModels;
 using UserManagement.Services.Services.ResponseModels;
 
@@ -13,16 +12,13 @@ namespace UserManagement.Services.Services
     public class UserServices : IUserServices
     {
         private readonly IUserRepository _userRepository;
-        private readonly IEncryptionServices _encryptionServices;
         private readonly IEmailSender _emailSender;
 
         public UserServices(
             IUserRepository userRepository,
-            IEncryptionServices encryptionServices,
             IEmailSender emailSender)
         {
             _userRepository = userRepository;
-            _encryptionServices = encryptionServices;
             _emailSender = emailSender;
         }
 
@@ -31,22 +27,7 @@ namespace UserManagement.Services.Services
             await ValidateUsernameAsync(userRegistration.UserName);
             await ValidateEmailAsync(userRegistration.Email);
 
-            _encryptionServices.CreatePasswordHash(
-                userRegistration.Password,
-                out byte[] passwordHash,
-                out byte[] passwordSalt);
-
-            User user = new()
-            {
-                FirstName = userRegistration.FirstName.Trim().ToLower(),
-                LastName = userRegistration.LastName.Trim().ToLower(),
-                UserName = userRegistration.UserName.Trim().ToLower(),
-                Email = userRegistration.Email.Trim().ToLower(),
-                PasswordHash = passwordHash,
-                PasswordSalt = passwordSalt,
-            };
-
-            User addedUser = await _userRepository.AddAsync(user);
+            UserDto addedUser = await _userRepository.AddAsync(userRegistration);
 
             await _emailSender.SendEmailAsync(
                 userRegistration.Email,
@@ -77,7 +58,7 @@ namespace UserManagement.Services.Services
         private async Task ValidateUsernameAsync(string userName)
         {
             userName = userName.Trim().ToLower();
-            User user = await _userRepository.GetByUserName(userName);
+            UserDto user = await _userRepository.GetByUsernameAsync(userName);
             if (user != null)
             {
                 throw new DomainValidationException($"Username \"{userName}\" already exists!");
@@ -87,46 +68,30 @@ namespace UserManagement.Services.Services
         public async Task<Tuple<bool,string>> VerifyUserCredentialsAsync(UserCredential userCreds)
         {
             if (string.IsNullOrEmpty(userCreds.UserName))
-            {
                 throw new ArgumentException("Value cannot be empty or whitespace.", nameof(userCreds.UserName));
-            }
 
-            string userName = userCreds.UserName.Trim().ToLower();
-            User user = await _userRepository.GetByUserName(userName);
-            if (user == null)
-            {
-                throw new DomainNotFoundException($"User with username \"{userName}\" not found");
-            }
+            if (string.IsNullOrEmpty(userCreds.Password))
+                throw new ArgumentException("Value cannot be empty or whitespace.", nameof(userCreds.Password));
 
-            var passwordIsVerified = _encryptionServices.VerifyPasswordHash(
-                userCreds.Password,
-                user.PasswordHash,
-                user.PasswordSalt);
+            var response = await _userRepository.VerifyUserCredentials(userCreds);
+            bool passwordIsVerified = response.Item1;
 
             if (!passwordIsVerified)
             {
-                return new Tuple<bool, string>(false, string.Empty);
+                throw new DomainValidationException("Username or password is incorrect");
             }
 
-            return new Tuple<bool, string>(true, user.Id);
+            return response;
         }
 
         public async Task<UserDto> GetUserAsync(string id)
         {
-            User user = await _userRepository.GetByIdAsync(id);
+            UserDto userDto = await _userRepository.GetByIdAsync(id);
 
-            if(user == null)
+            if(userDto == null)
             {
                 throw new DomainNotFoundException($"User with ID \"{id}\" does not exist.");
             }
-
-            var userDto = new UserDto
-            {
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email,
-                UserName = user.UserName
-            };
 
             return userDto;
         }
