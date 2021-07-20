@@ -25,12 +25,7 @@ namespace UserManagement.AuthManager
         public async Task<string> AuthenticateAsync(UserCredential userCreds)
         {
             var response = await _userServices.VerifyUserCredentialsAsync(userCreds);
-            bool userIsVerified = response.Item1;
             string userId = response.Item2;
-            if (!userIsVerified)
-            {
-                throw new DomainValidationException("Username or password is incorrect");
-            }
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenKey = Encoding.ASCII.GetBytes(_key);

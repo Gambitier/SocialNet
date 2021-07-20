@@ -5,54 +5,59 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UserManagement.Persistence.DataModels;
 using UserManagement.Persistence.DBConfiguration;
-using UserManagement.Persistence.IRepository;
+using UserManagement.Services.IRepository;
+using UserManagement.Services.Services;
+using UserManagement.Services.Services.RequestModels;
+using UserManagement.Services.Services.ResponseModels;
 
 namespace UserManagement.Persistence.Repository
 {
-    public class UserRepository : GenericRepository<User>, IUserRepository
+    public class UserRepository : ConfigRepository<User>, IUserRepository
     {
-        public UserRepository(IDbClient dbClient, ILogger logger) : base(dbClient, logger) { }
+        private readonly IEncryptionServices _encryptionServices;
 
-        public override async Task<User> AddAsync(User entity)
+        public UserRepository(IDbClient dbClient, ILogger logger, IEncryptionServices encryptionServices)
+            : base(dbClient, logger)
+        {
+            _encryptionServices = encryptionServices;
+        }
+
+        public async Task<UserDto> AddAsync(UserRegistration registration)
         {
             try
             {
+                _encryptionServices.CreatePasswordHash(
+                    registration.Password,
+                    out byte[] passwordHash,
+                    out byte[] passwordSalt);
+
+                User entity = new()
+                {
+                    FirstName = registration.FirstName.Trim(),
+                    LastName = registration.LastName.Trim(),
+                    UserName = registration.UserName.Trim().ToLower(),
+                    Email = registration.Email.Trim().ToLower(),
+                    PasswordHash = passwordHash,
+                    PasswordSalt = passwordSalt,
+                };
+
                 await Collection.InsertOneAsync(entity);
-                return entity;
+                return MapUserAndGetDto(entity);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "{RepositoryName} Add method error", typeof(UserRepository));
-                return new User();
+                return new UserDto();
             }
         }
 
-        public override async Task<IEnumerable<User>> All()
-        {
-            try
-            {
-                IAsyncCursor<User> cursor = await Collection.FindAsync(e => true);
-                IEnumerable<User> users = cursor.ToEnumerable();
-                return users;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "{RepositoryName} All method error", typeof(UserRepository));
-                return new List<User>();
-            }
-        }
-
-        public override Task<bool> Delete(string id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<User> GetByEmail(string email)
+        public async Task<UserDto> GetByEmail(string email)
         {
             try
             {
                 IAsyncCursor<User> cursor = await Collection.FindAsync(e => e.Email.Equals(email));
-                return cursor.FirstOrDefault();
+                User user = cursor.FirstOrDefault();
+                return MapUserAndGetDto(user);
             }
             catch (Exception ex)
             {
@@ -61,26 +66,52 @@ namespace UserManagement.Persistence.Repository
             }
         }
 
-        public async Task<User> GetByUserName(string username)
+        public async Task<UserDto> GetByUsernameAsync(string username)
         {
             try
             {
-                IAsyncCursor<User> cursor = await Collection.FindAsync(e => e.UserName.Equals(username));
-                return cursor.FirstOrDefault();
+                IAsyncCursor<User> cursor = await Collection.FindAsync(e => e.Email.Equals(username));
+                User user = cursor.FirstOrDefault();
+                return MapUserAndGetDto(user);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "{RepositoryName} GetByUserName method error", typeof(UserRepository));
+                _logger.LogError(ex, "{RepositoryName} GetByUsernameAsync method error", typeof(UserRepository));
                 return null;
             }
         }
 
-        public override async Task<User> GetByIdAsync(string id)
+        public async Task<Tuple<bool, string>> VerifyUserCredentials(UserCredential userCreds)
+        {
+            try
+            {
+                userCreds.UserName = userCreds.UserName.Trim().ToLower();
+
+                IAsyncCursor<User> cursor = await Collection.FindAsync(e => e.UserName.Equals(userCreds.UserName));
+                User user = cursor.FirstOrDefault();
+                var passwordIsVerified = _encryptionServices.VerifyPasswordHash(
+                    userCreds.Password,
+                    user.PasswordHash,
+                    user.PasswordSalt);
+
+                return new Tuple<bool, string>(
+                    passwordIsVerified,
+                    passwordIsVerified ? user.Id : "");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "{RepositoryName} GetByUserName method error", typeof(UserRepository));
+                return new Tuple<bool, string>(false, "");
+            }
+        }
+
+        public async Task<UserDto> GetByIdAsync(string id)
         {
             try
             {
                 IAsyncCursor<User> cursor = await Collection.FindAsync(e => e.Id.Equals(id));
-                return cursor.FirstOrDefault();
+                User user = cursor.FirstOrDefault();
+                return MapUserAndGetDto(user);
             }
             catch (Exception ex)
             {
@@ -89,9 +120,16 @@ namespace UserManagement.Persistence.Repository
             }
         }
 
-        public override Task<bool> Upsert(User entity)
+        private static UserDto MapUserAndGetDto(User user)
         {
-            throw new NotImplementedException();
+            return new UserDto
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+            };
         }
     }
 }

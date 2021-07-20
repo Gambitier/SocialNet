@@ -3,9 +3,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Threading.Tasks;
-using UserManagement.Persistence.DataModels;
-using UserManagement.Persistence.IRepository;
 using UserManagement.Services.Exceptions;
+using UserManagement.Services.IRepository;
 using UserManagement.Services.Services;
 using UserManagement.Services.Services.RequestModels;
 using UserManagement.Services.Services.ResponseModels;
@@ -17,102 +16,71 @@ namespace UserManagement.Tests
     {
         UserServices _sut;
         private readonly Mock<IUserRepository> _userRepository = new Mock<IUserRepository>();
-        private readonly Mock<IEncryptionServices> _encryptionServices = new Mock<IEncryptionServices>();
         private readonly Mock<IEmailSender> emailSender = new Mock<IEmailSender>();
 
         public UserServicesTests()
         {
             _sut = new UserServices(
                 _userRepository.Object,
-                _encryptionServices.Object,
                 emailSender.Object);
         }
 
         [TestMethod]
-        public async Task RegisterUserAsync_ShouldAddUserToDbAndReturnUserId()
+        public async Task RegisterUserAsync_ShouldAddUserAndReturnUserDto()
         {
             //arrange
-            byte[] PasswordHash = null, PasswordSalt = null;
-
-            var Userid = new Guid().ToString();
-            const string Username = "gambitier",
-                         FirstName = "Akash",
-                         LastName = "Jadhav",
-                         Password = "Test@123",
-                         Email = "akash@yopmail.com";
-
             UserRegistration userRegistrationData = new()
             {
-                UserName = Username,
-                FirstName = FirstName,
-                LastName = LastName,
-                Email = Email,
-                Password = Password
+                UserName = "gambitier",
+                FirstName = "Akash",
+                LastName = "Jadhav",
+                Password = "Test@123",
+                Email = "akash@yopmail.com"
             };
 
-            User addUserResponse = new()
+            UserDto addUserResponse = new()
             {
-                Id = Userid,
+                Id = new Guid().ToString(),
+                UserName = userRegistrationData.UserName,
+                FirstName = userRegistrationData.FirstName,
+                LastName = userRegistrationData.LastName,
+                Email = userRegistrationData.Email,
             };
 
-            _userRepository.Setup(x => x.GetByUserName(Username)).ReturnsAsync((User)null);
-            _userRepository.Setup(x => x.GetByEmail(Email)).ReturnsAsync((User)null);
-            _userRepository.Setup(x => x.AddAsync(It.IsAny<User>())).ReturnsAsync(addUserResponse);
+            _userRepository.Setup(x => x.AddAsync(It.IsAny<UserRegistration>())).ReturnsAsync(addUserResponse);
 
-            _encryptionServices.Setup(x =>
-                x.CreatePasswordHash(userRegistrationData.Password, out PasswordHash, out PasswordSalt)).Verifiable();
 
             //act
             string registeredUserId = await _sut.RegisterUserAsync(userRegistrationData);
 
             //assert
-            Assert.AreEqual(Userid, registeredUserId);
+            Assert.AreEqual(addUserResponse.Id, registeredUserId);
         }
 
         [TestMethod]
         public async Task VerifyUserCredentialsAsync_ShouldReturnUserDto_WhenUserExists()
         {
             //arrange
-            const string UserName = "gambitier",
-                         FirstName = "Akash",
-                         LastName = "Jadhav",
-                         Email = "akash@yopmail.com";
+            string Id = new Guid().ToString();
 
-            UserCredential userCreds = new UserCredential
+            UserCredential userCreds = new()
             {
-                UserName = UserName,
+                UserName = "gambitier",
                 Password = "Test@123"
             };
 
-            new EncryptionServices().CreatePasswordHash(
-                userCreds.Password,
-                out byte[] PasswordHash,
-                out byte[] PasswordSalt);
+            var verificationResponse = new Tuple<bool, string>(true, Id);
 
-            User user = new User()
-            {
-                Id = new Guid().ToString(),
-                UserName = UserName,
-                FirstName = FirstName,
-                LastName = LastName,
-                Email = Email,
-                PasswordHash = PasswordHash,
-                PasswordSalt = PasswordSalt
-            };
-
-            _userRepository.Setup(x => x.GetByUserName(UserName)).ReturnsAsync(user);
-            _encryptionServices.Setup(x => 
-                    x.VerifyPasswordHash(userCreds.Password, PasswordHash, PasswordSalt))
-                .Returns(true);
+            _userRepository.Setup(x => x.VerifyUserCredentials(It.IsAny<UserCredential>())).ReturnsAsync(verificationResponse);
 
             //act
             Tuple<bool, string> response = await _sut.VerifyUserCredentialsAsync(userCreds);
-            bool isVerified = response.Item1;
-            string userId = response.Item2;
 
             //assert
+            bool isVerified = response.Item1;
+            string userId = response.Item2;
             Assert.IsTrue(isVerified);
-            Assert.AreEqual(user.Id, userId);
+            Assert.AreEqual(Id, userId);
         }
 
         [TestMethod]
@@ -120,18 +88,13 @@ namespace UserManagement.Tests
         {
             //arrange
             string userId = new Guid().ToString();
-            string UserName = "gambitier";
-            string FirstName = "Akash";
-            string LastName = "Jadhav";
-            string Email = "akash@yopmail.com";
-
-            User user = new User()
+            UserDto user = new()
             {
                 Id = userId,
-                UserName = UserName,
-                FirstName = FirstName,
-                LastName = LastName,
-                Email = Email
+                UserName = "gambitier",
+                FirstName = "Akash",
+                LastName = "Jadhav",
+                Email = "akash@yopmail.com"
             };
 
             _userRepository.Setup(x => x.GetByIdAsync(userId)).ReturnsAsync(user);
@@ -140,6 +103,7 @@ namespace UserManagement.Tests
             UserDto response = await _sut.GetUserAsync(userId);
 
             //assert
+            Assert.AreEqual(user.Id, response.Id);
             Assert.AreEqual(user.FirstName, response.FirstName);
             Assert.AreEqual(user.LastName, response.LastName);
             Assert.AreEqual(user.UserName, response.UserName);
@@ -151,10 +115,10 @@ namespace UserManagement.Tests
         {
             //arrange
             string userId = new Guid().ToString();
-            _userRepository.Setup(x => x.GetByIdAsync(userId)).ReturnsAsync((User)null);
+            _userRepository.Setup(x => x.GetByIdAsync(userId)).ReturnsAsync((UserDto)null);
 
             //assert
-            Exception ex = await Assert.ThrowsExceptionAsync<DomainNotFoundException>(async () => 
+            Exception ex = await Assert.ThrowsExceptionAsync<DomainNotFoundException>(async () =>
                 await _sut.GetUserAsync(userId)
             );
 

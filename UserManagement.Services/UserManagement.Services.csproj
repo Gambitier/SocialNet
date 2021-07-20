@@ -9,8 +9,4 @@
     <PackageReference Include="SendGrid" Version="9.24.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\UserManagement.Persistence\UserManagement.Persistence.csproj" />
-  </ItemGroup>
-
 </Project>
