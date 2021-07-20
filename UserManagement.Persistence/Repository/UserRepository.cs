@@ -11,7 +11,10 @@ namespace UserManagement.Persistence.Repository
 {
     public class UserRepository : GenericRepository<User>, IUserRepository
     {
-        public UserRepository(IDbClient dbClient, ILogger logger) : base(dbClient, logger) { }
+        public UserRepository(IDbClient dbClient, ILogger logger)
+            : base(dbClient, logger)
+        {
+        }
 
         public override async Task<User> AddAsync(User entity)
         {

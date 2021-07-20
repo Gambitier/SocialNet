@@ -24,25 +24,22 @@ namespace UserManagement.Persistence.Repository
             Collection = _dbClient.DbCollection<T>();
         }
 
-        public virtual async Task<T> AddAsync(T entity)
-        {
-            await Collection.InsertOneAsync(entity);
-            return entity;
-        }
-
-        public virtual async Task<IEnumerable<T>> All()
-        {
-            IAsyncCursor<T> cursor = await Collection.FindAsync(e => true);
-            IEnumerable<T> entities = cursor.ToEnumerable<T>();
-            return entities;
-        }
-
-        public virtual Task<bool> Delete(string id)
+        public virtual Task<IEnumerable<T>> All()
         {
             throw new NotImplementedException();
         }
 
         public virtual Task<T> GetByIdAsync(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual Task<T> AddAsync(T entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual Task<bool> Delete(string id)
         {
             throw new NotImplementedException();
         }
