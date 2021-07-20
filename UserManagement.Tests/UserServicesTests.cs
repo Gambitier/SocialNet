@@ -16,14 +16,12 @@ namespace UserManagement.Tests
     {
         UserServices _sut;
         private readonly Mock<IUserRepository> _userRepository = new Mock<IUserRepository>();
-        private readonly Mock<IEncryptionServices> _encryptionServices = new Mock<IEncryptionServices>();
         private readonly Mock<IEmailSender> emailSender = new Mock<IEmailSender>();
 
         public UserServicesTests()
         {
             _sut = new UserServices(
                 _userRepository.Object,
-                _encryptionServices.Object,
                 emailSender.Object);
         }
 
@@ -85,50 +83,46 @@ namespace UserManagement.Tests
             Assert.AreEqual(Id, userId);
         }
 
-        //[TestMethod]
-        //public async Task GetUserAsync_ShouldReturnUserDto_WhenUserExists()
-        //{
-        //    //arrange
-        //    string userId = new Guid().ToString();
-        //    string UserName = "gambitier";
-        //    string FirstName = "Akash";
-        //    string LastName = "Jadhav";
-        //    string Email = "akash@yopmail.com";
+        [TestMethod]
+        public async Task GetUserAsync_ShouldReturnUserDto_WhenUserExists()
+        {
+            //arrange
+            string userId = new Guid().ToString();
+            UserDto user = new()
+            {
+                Id = userId,
+                UserName = "gambitier",
+                FirstName = "Akash",
+                LastName = "Jadhav",
+                Email = "akash@yopmail.com"
+            };
 
-        //    User user = new User()
-        //    {
-        //        Id = userId,
-        //        UserName = UserName,
-        //        FirstName = FirstName,
-        //        LastName = LastName,
-        //        Email = Email
-        //    };
+            _userRepository.Setup(x => x.GetByIdAsync(userId)).ReturnsAsync(user);
 
-        //    _userRepository.Setup(x => x.GetByIdAsync(userId)).ReturnsAsync(user);
+            //act
+            UserDto response = await _sut.GetUserAsync(userId);
 
-        //    //act
-        //    UserDto response = await _sut.GetUserAsync(userId);
+            //assert
+            Assert.AreEqual(user.Id, response.Id);
+            Assert.AreEqual(user.FirstName, response.FirstName);
+            Assert.AreEqual(user.LastName, response.LastName);
+            Assert.AreEqual(user.UserName, response.UserName);
+            Assert.AreEqual(user.Email, response.Email);
+        }
 
-        //    //assert
-        //    Assert.AreEqual(user.FirstName, response.FirstName);
-        //    Assert.AreEqual(user.LastName, response.LastName);
-        //    Assert.AreEqual(user.UserName, response.UserName);
-        //    Assert.AreEqual(user.Email, response.Email);
-        //}
+        [TestMethod]
+        public async Task GetUserAsync_ShouldThrowException_WhenUserDoesNotExistsAsync()
+        {
+            //arrange
+            string userId = new Guid().ToString();
+            _userRepository.Setup(x => x.GetByIdAsync(userId)).ReturnsAsync((UserDto)null);
 
-        //[TestMethod]
-        //public async Task GetUserAsync_ShouldThrowException_WhenUserDoesNotExistsAsync()
-        //{
-        //    //arrange
-        //    string userId = new Guid().ToString();
-        //    _userRepository.Setup(x => x.GetByIdAsync(userId)).ReturnsAsync((User)null);
+            //assert
+            Exception ex = await Assert.ThrowsExceptionAsync<DomainNotFoundException>(async () =>
+                await _sut.GetUserAsync(userId)
+            );
 
-        //    //assert
-        //    Exception ex = await Assert.ThrowsExceptionAsync<DomainNotFoundException>(async () => 
-        //        await _sut.GetUserAsync(userId)
-        //    );
-
-        //    Assert.AreEqual($"User with ID \"{userId}\" does not exist.", ex.Message);
-        //}
+            Assert.AreEqual($"User with ID \"{userId}\" does not exist.", ex.Message);
+        }
     }
 }
