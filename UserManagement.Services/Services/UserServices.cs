@@ -43,8 +43,6 @@ namespace UserManagement.Services.Services
 
         private async Task ValidateEmailAsync(string email)
         {
-            email = email.Trim().ToLower();
-
             if (!MailAddress.TryCreate(email, out _))
             {
                 throw new DomainValidationException($"Email address \"{email}\" is not valid!");
@@ -59,7 +57,6 @@ namespace UserManagement.Services.Services
 
         private async Task ValidateUsernameAsync(string userName)
         {
-            userName = userName.Trim().ToLower();
             UserDto user = await _userRepository.GetByUsernameAsync(userName);
             if (user != null)
             {
