@@ -1,11 +1,7 @@
 ﻿using MongoDB.Driver;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using UserManagement.Persistence.DataModels;
 using UserManagement.Persistence.DBConfiguration;
 using Microsoft.Extensions.Logging;
-using UserManagement.Services.IRepository;
 
 namespace UserManagement.Persistence.Repository
 {

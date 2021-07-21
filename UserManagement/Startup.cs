@@ -8,11 +8,12 @@ using UserManagement.AuthManager;
 using UserManagement.Persistence.DBConfiguration;
 using UserManagement.Extensions;
 using UserManagement.Middlewares;
-using UserManagement.Services.SendGridConfigs;
 using UserManagement.Services.Services;
 using UserManagement.Persistence.Repository;
 using Microsoft.Extensions.Logging;
 using UserManagement.Services.IRepository;
+using UserManagement.Services.EmailService.SendGridConfigs;
+using UserManagement.Services.EmailService.Services;
 
 namespace UserManagement
 {
@@ -49,7 +50,7 @@ namespace UserManagement
             services.AddSingleton<IDbClient, DbClient>();
             services.Configure<DbConfig>(Configuration);
             
-            services.AddTransient<IEmailSender, EmailSenderServices>();
+            services.AddTransient<IEmailSender, EmailSender>();
             services.Configure<AuthMessageSenderOptions>(Configuration);
 
             services.AddTransient<IUserRepository, UserRepository>();

@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using UserManagement.Persistence.DataModels;
 using UserManagement.Persistence.DBConfiguration;
@@ -122,14 +121,15 @@ namespace UserManagement.Persistence.Repository
 
         private static UserDto MapUserAndGetDto(User user)
         {
-            return new UserDto
-            {
-                Id = user.Id,
-                UserName = user.UserName,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email,
-            };
+            return user == null
+                ? null
+                : new UserDto {
+                    Id = user.Id,
+                    UserName = user.UserName,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email,
+                };
         }
     }
 }

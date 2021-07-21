@@ -4,17 +4,17 @@ using Microsoft.Extensions.Options;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using System.Threading.Tasks;
-using UserManagement.Services.SendGridConfigs;
+using UserManagement.Services.EmailService.SendGridConfigs;
 
-namespace UserManagement.Services.Services
+namespace UserManagement.Services.EmailService.Services
 {
-    public class EmailSenderServices : IEmailSender
+    public class EmailSender : IEmailSender
     {
-        private string FromEmail {get;}
+        private string FromEmail { get; }
 
         public AuthMessageSenderOptions Options { get; } //set only via Secret Manager
 
-        public EmailSenderServices(IConfiguration Configuration, IOptions<AuthMessageSenderOptions> optionsAccessor)
+        public EmailSender(IConfiguration Configuration, IOptions<AuthMessageSenderOptions> optionsAccessor)
         {
             Options = optionsAccessor.Value;
             FromEmail = Configuration.GetValue<string>("SendGridFromEmailAddress");
