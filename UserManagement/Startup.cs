@@ -1,19 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using UserManagement.AuthManager;
 using UserManagement.Persistence.DBConfiguration;
 using UserManagement.Extensions;
 using UserManagement.Middlewares;
-using UserManagement.Services.Services;
-using UserManagement.Persistence.Repository;
-using Microsoft.Extensions.Logging;
-using UserManagement.Services.IRepository;
 using UserManagement.Services.EmailService.SendGridConfigs;
-using UserManagement.Services.EmailService.Services;
 
 namespace UserManagement
 {
