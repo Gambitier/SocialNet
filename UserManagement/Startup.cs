@@ -19,7 +19,6 @@ namespace UserManagement
 {
     public class Startup
     {
-
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -38,29 +37,15 @@ namespace UserManagement
                         .WithOrigins("http://localhost:3000")
                         .AllowAnyHeader()
                         .AllowAnyMethod();
-
                 });
             });
+
             services.AddControllers();
-
-            string tokenKey = Configuration.GetValue<string>("TokenKey");
-            services.ConfigureAuthentication(tokenKey);
-
-            services.AddSingleton<IJWTAuthenticationManager, JWTAuthenticationManager>();
-            services.AddSingleton<IDbClient, DbClient>();
+            services.ConfigureAuthentication(Configuration.GetValue<string>("TokenKey"));
             services.Configure<DbConfig>(Configuration);
-            
-            services.AddTransient<IEmailSender, EmailSender>();
             services.Configure<AuthMessageSenderOptions>(Configuration);
-
-            services.AddTransient<IUserRepository, UserRepository>();
-            services.AddTransient<IUserServices, UserServices>();
-            services.AddTransient<IEncryptionServices, EncryptionServices>();
-            services.AddTransient<ExceptionHandlingMiddleware>();
-
             services.AddLogging();
-            services.AddSingleton(typeof(ILogger), typeof(Logger<Startup>));
-
+            services.ConfigureDependencyInjection();
             services.AddSwaggerDocumentation();            
         }
 
