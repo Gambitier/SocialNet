@@ -1,24 +1,17 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using UserManagement.AuthManager;
 using UserManagement.Persistence.DBConfiguration;
 using UserManagement.Extensions;
 using UserManagement.Middlewares;
-using UserManagement.Services.SendGridConfigs;
-using UserManagement.Services.Services;
-using UserManagement.Persistence.Repository;
-using Microsoft.Extensions.Logging;
-using UserManagement.Services.IRepository;
+using UserManagement.Services.EmailService.SendGridConfigs;
 
 namespace UserManagement
 {
     public class Startup
     {
-
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -37,29 +30,15 @@ namespace UserManagement
                         .WithOrigins("http://localhost:3000")
                         .AllowAnyHeader()
                         .AllowAnyMethod();
-
                 });
             });
+
             services.AddControllers();
-
-            string tokenKey = Configuration.GetValue<string>("TokenKey");
-            services.ConfigureAuthentication(tokenKey);
-
-            services.AddSingleton<IJWTAuthenticationManager, JWTAuthenticationManager>();
-            services.AddSingleton<IDbClient, DbClient>();
+            services.ConfigureAuthentication(Configuration.GetValue<string>("TokenKey"));
             services.Configure<DbConfig>(Configuration);
-            
-            services.AddTransient<IEmailSender, EmailSenderServices>();
             services.Configure<AuthMessageSenderOptions>(Configuration);
-
-            services.AddTransient<IUserRepository, UserRepository>();
-            services.AddTransient<IUserServices, UserServices>();
-            services.AddTransient<IEncryptionServices, EncryptionServices>();
-            services.AddTransient<ExceptionHandlingMiddleware>();
-
             services.AddLogging();
-            services.AddSingleton(typeof(ILogger), typeof(Logger<Startup>));
-
+            services.ConfigureDependencyInjection();
             services.AddSwaggerDocumentation();            
         }
 

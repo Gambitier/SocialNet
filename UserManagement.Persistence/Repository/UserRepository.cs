@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using UserManagement.Persistence.DataModels;
 using UserManagement.Persistence.DBConfiguration;
@@ -55,6 +54,8 @@ namespace UserManagement.Persistence.Repository
         {
             try
             {
+                email = email?.Trim().ToLower();
+
                 IAsyncCursor<User> cursor = await Collection.FindAsync(e => e.Email.Equals(email));
                 User user = cursor.FirstOrDefault();
                 return MapUserAndGetDto(user);
@@ -70,6 +71,7 @@ namespace UserManagement.Persistence.Repository
         {
             try
             {
+                username = username?.Trim().ToLower();
                 IAsyncCursor<User> cursor = await Collection.FindAsync(e => e.Email.Equals(username));
                 User user = cursor.FirstOrDefault();
                 return MapUserAndGetDto(user);
@@ -122,14 +124,15 @@ namespace UserManagement.Persistence.Repository
 
         private static UserDto MapUserAndGetDto(User user)
         {
-            return new UserDto
-            {
-                Id = user.Id,
-                UserName = user.UserName,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email,
-            };
+            return user == null
+                ? null
+                : new UserDto {
+                    Id = user.Id,
+                    UserName = user.UserName,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email,
+                };
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using UserManagement.Services.Services.RequestModels;
 using UserManagement.Services.Services.ResponseModels;

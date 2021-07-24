@@ -2,6 +2,8 @@
 using System;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using UserManagement.Services.EmailService.EmailEventArgs;
+using UserManagement.Services.EmailService.Events;
 using UserManagement.Services.Exceptions;
 using UserManagement.Services.IRepository;
 using UserManagement.Services.Services.RequestModels;
@@ -12,14 +14,18 @@ namespace UserManagement.Services.Services
     public class UserServices : IUserServices
     {
         private readonly IUserRepository _userRepository;
-        private readonly IEmailSender _emailSender;
+
+        public event EventHandler<UserRegisteredEventArgs> UserRegisteredEventHandler;
 
         public UserServices(
             IUserRepository userRepository,
             IEmailSender emailSender)
         {
             _userRepository = userRepository;
-            _emailSender = emailSender;
+
+            // todo : should we instantiate like this?
+            var emailEvents = new UserRegistered(emailSender);
+            UserRegisteredEventHandler += emailEvents.UserRegisteredEvent;
         }
 
         public async Task<string> RegisterUserAsync(UserRegistration userRegistration)
@@ -29,20 +35,14 @@ namespace UserManagement.Services.Services
 
             UserDto addedUser = await _userRepository.AddAsync(userRegistration);
 
-            await _emailSender.SendEmailAsync(
-                userRegistration.Email,
-                "welcome to usermanagement",
-                $"Welcome!! <br/><br/> " +
-                $"your username is \"{userRegistration.UserName.Trim().ToLower()}\" " +
-                $"and password is \"{userRegistration.Password}\"");
+            UserRegisteredEventHandler?
+                .Invoke(this, new UserRegisteredEventArgs(userRegistration));
 
             return addedUser.Id;
         }
 
         private async Task ValidateEmailAsync(string email)
         {
-            email = email.Trim().ToLower();
-
             if (!MailAddress.TryCreate(email, out _))
             {
                 throw new DomainValidationException($"Email address \"{email}\" is not valid!");
@@ -57,7 +57,6 @@ namespace UserManagement.Services.Services
 
         private async Task ValidateUsernameAsync(string userName)
         {
-            userName = userName.Trim().ToLower();
             UserDto user = await _userRepository.GetByUsernameAsync(userName);
             if (user != null)
             {

@@ -1,4 +1,4 @@
-﻿namespace UserManagement.Services.SendGridConfigs
+﻿namespace UserManagement.Services.EmailService.SendGridConfigs
 {
     /// <summary>
     /// these configs needs to be initialized with user-secrets
