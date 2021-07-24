@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "6929ef4b-2720-4772-aafa-19cad39179c6",
-		"name": "UserManagement",
+		"name": "SocialNet",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -83,7 +83,7 @@
 							"  jwt = responseJson.token;\r",
 							"});\r",
 							"\r",
-							"pm.collectionVariables.set('UserManagement-JWT', `Bearer ${jwt}`);"
+							"pm.collectionVariables.set('SocialNet-JWT', `Bearer ${jwt}`);"
 						],
 						"type": "text/javascript"
 					}
@@ -126,7 +126,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "{{UserManagement-JWT}}",
+						"value": "{{SocialNet-JWT}}",
 						"type": "text"
 					}
 				],
@@ -171,7 +171,7 @@
 			"value": "https://localhost:44390"
 		},
 		{
-			"key": "UserManagement-JWT",
+			"key": "SocialNet-JWT",
 			"value": "null"
 		},
 		{

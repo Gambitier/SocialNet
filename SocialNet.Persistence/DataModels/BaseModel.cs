@@ -1,0 +1,11 @@
+﻿using MongoDB.Bson.Serialization.Attributes;
+
+namespace SocialNet.Persistence.DataModels
+{
+    public class BaseModel
+    {
+        [BsonId]
+        [BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
+        public string Id { get; set; }
+    }
+}
